@@ -18,15 +18,29 @@ const userRegister = require('./views/register')
 // /auth/login
 
 // /todo/get
+app.get('/todo/:id', (req, res) => {
+    res.send("details");
+})
 
 // /todo/list
-app.get('/todo')
+app.get('/todo', (req, res) => {
+    res.send("getting todos");
+})
 
 // /todo/add
+app.post('/todo', (req, res) => {
+    res.send("creating todo");
+})
 
 // /todo/delete
+app.delete('/todo/:id', (req, res) => {
+    res.send("deleting");
+})
 
 // /todo/update
+app.post('/todo/:id', (req, res) => {
+    res.send("details");
+})
 
 
 app.listen(port, () => {
