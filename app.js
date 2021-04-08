@@ -20,7 +20,13 @@ const userRegister = require('./views/register')
 
 // /todo/get
 app.get('/todo/get/:id', (req, res) => {
-    res.send("details");
+    const id = parseInt(req.params.id)
+    pool.query('SELECT * FROM todo WHERE id = $1', [id] , (error, result) => {
+        if (error) {
+            throw error
+        }
+        res.status(200).json(result.rows)
+    })
 })
 
 // /todo/list
