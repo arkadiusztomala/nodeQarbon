@@ -25,6 +25,10 @@ app.get('/todo/get/:id', (req, res) => {
         if (error) {
             throw error
         }
+        if (result.rows.length === 0) {
+            res.status(404).send('Todo doesnt exist. Fuck you!')
+            return
+        }
         res.status(200).json(result.rows)
     })
 })
