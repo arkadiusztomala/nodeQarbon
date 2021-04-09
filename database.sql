@@ -1,5 +1,5 @@
 CREATE TABLE todo (
-	id INT,
+	id INT PRIMARY KEY,
 	description VARCHAR(100),
 	done VARCHAR(50)
 );

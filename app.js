@@ -45,13 +45,29 @@ app.get('/todo/list', (req, res) => {
 
 // /todo/add
 app.post('/todo/add', (req, res) => {
-    res.send("creating todo");
+        pool.query('INSERT INTO todo (description)', (error, result) => {
+        if (error) {
+            throw error
+        }
+        res.status(200).json(result.rows)
+    })
 })
 
 // /todo/delete
 app.delete('/todo/delete/:id', (req, res) => {
-    res.send("deleting");
+    const id = parseInt(req.params.id)
+    pool.query('DELETE FROM todo WHERE id = $1', [id] , (error, result) => {
+        if (error) {
+            throw error
+        }
+        if (result.rows.length === 0) {
+            res.status(200).send('Todo has been deleted.')
+            return   //a co jesli ID do skasowania w ogole nie bylo "there no such id to delete"
+        }
+        res.status(200).json(result.rows)
+    })
 })
+
 
 // /todo/update
 app.post('/todo/update/:id', (req, res) => {
