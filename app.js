@@ -45,11 +45,12 @@ app.get('/todo/list', (req, res) => {
 
 // /todo/add
 app.post('/todo/add', (req, res) => {
-        pool.query('INSERT INTO todo (description)', (error, result) => {
+        const description = req.body.description
+        pool.query('INSERT INTO todo (description) VALUES ($1)', [description], (error, result) => {
         if (error) {
             throw error
         }
-        res.status(200).json(result.rows)
+        res.status(201).send("Todo has been added.")
     })
 })
 
@@ -60,11 +61,7 @@ app.delete('/todo/delete/:id', (req, res) => {
         if (error) {
             throw error
         }
-        if (result.rows.length === 0) {
-            res.status(200).send('Todo has been deleted.')
-            return   //a co jesli ID do skasowania w ogole nie bylo "there no such id to delete"
-        }
-        res.status(200).json(result.rows)
+        res.status(200).send('Todo has been deleted.')
     })
 })
 
@@ -81,3 +78,7 @@ app.listen(port, () => {
 
 
 // POST wyslac
+
+//!!!!!!!!!!!!!!!!!!!!
+// To start the service, type: sudo service postgresql start
+// To conntect to postgres, type: sudo -u postgres psql

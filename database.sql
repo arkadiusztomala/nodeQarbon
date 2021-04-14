@@ -1,8 +1,9 @@
 CREATE TABLE todo (
-	id INT PRIMARY KEY,
+	id INT SERIAL PRIMARY KEY,
 	description VARCHAR(100),
 	done VARCHAR(50)
 );
+INSERT INTO todo (description) VALUES ("Tralalala");
 insert into todo (id, description, done) values (1, 'sem sed sagittis nam congue risus semper porta volutpat quam pede lobortis', true);
 insert into todo (id, description, done) values (2, 'semper porta volutpat quam pede lobortis ligula sit amet eleifend pede libero quis orci', false);
 insert into todo (id, description, done) values (3, 'nam congue risus semper porta volutpat quam pede lobortis ligula sit amet eleifend', false);
