@@ -4,6 +4,8 @@ const express = require('express')
 const app = express()
 const pool = require('./db/db')
 
+app.use(express.json());  //express. json() is a method inbuilt in express to recognize the incoming Request Object as a JSON Object. This method is called as a middleware in your application using the code: app. use(express
+
 
 const port = 3000
 
@@ -42,7 +44,6 @@ app.get('/todo/list', (req, res) => {
 })
 
 // /todo/add
-app.use(express.json());  //express. json() is a method inbuilt in express to recognize the incoming Request Object as a JSON Object. This method is called as a middleware in your application using the code: app. use(express
 app.post('/todo/add', (req, res) => {
         const { description } = req.body;
         pool.query('INSERT INTO todo (description) VALUES ($1)', [description], (error, result) => {
