@@ -15,5 +15,8 @@
     "pg-promise": "^10.9.5",
     "pgtools": "^0.3.1",
     "uwebsockets.js": "^18.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.24.0"
   }
 }

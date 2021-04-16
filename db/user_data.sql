@@ -14,3 +14,21 @@ insert into user_data (id, first_name, email, todo_id) values (7, 'Agata', 'abur
 insert into user_data (id, first_name, email, todo_id) values (8, 'Ajay', 'arobus7@jigsy.com', 8);
 insert into user_data (id, first_name, email, todo_id) values (9, 'Alexandrina', 'amarshall8@domainmarket.com', 9);
 insert into user_data (id, first_name, email, todo_id) values (10, 'Farah', 'fkosel9@sciencedirect.com', 10);
+
+
+CREATE schema shop;
+
+CREATE TABLE shop.products (
+	id INT,
+	first_name VARCHAR(50) NOT NULL,
+	email VARCHAR(50) NOT NULL,
+	todo_id INT
+);
+
+
+CREATE TABLE shop.users (
+	id INT,
+	first_name VARCHAR(50) NOT NULL,
+	email VARCHAR(50) NOT NULL,
+	todo_id INT
+);

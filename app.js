@@ -17,11 +17,11 @@ const userRegister = require('./views/register')
 
 
 // /auth/login
-
+const getOne = (table) => `SELECT * FROM ${table} WHERE id = $1`
 // /todo/get
 app.get('/todo/get/:id', (req, res) => {
     const id = parseInt(req.params.id)
-    db.query('SELECT * FROM todo WHERE id = $1', [id])
+    db.query(getOne('todo'), [id])
         .then(data => {
             if (data.length === 0) {
                 res.status(404).send('Todo doesnt exist.')
@@ -34,6 +34,16 @@ app.get('/todo/get/:id', (req, res) => {
         })
 })
 
+// /todo/get
+app.get('/todo/getTwo/:id', async (req, res) => {
+    const id = parseInt(req.params.id)
+    const result = await db.query(getOne('todo'), [id])
+    if (result.length === 0) {
+        res.status(404).send('Todo doesnt exist.')
+        return
+    }
+    res.status(200).json(result)  
+})
 // /todo/list
 app.get('/todo/list', (req, res) => {
     db.query('SELECT * FROM todo')
