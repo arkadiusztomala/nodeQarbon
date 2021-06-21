@@ -16,19 +16,19 @@ insert into user_data (id, first_name, email, todo_id) values (9, 'Alexandrina',
 insert into user_data (id, first_name, email, todo_id) values (10, 'Farah', 'fkosel9@sciencedirect.com', 10);
 
 
-CREATE schema shop;
+-- CREATE schema shop;
 
-CREATE TABLE shop.products (
-	id INT,
-	first_name VARCHAR(50) NOT NULL,
-	email VARCHAR(50) NOT NULL,
-	todo_id INT
-);
+-- CREATE TABLE shop.products (
+-- 	id INT,
+-- 	first_name VARCHAR(50) NOT NULL,
+-- 	email VARCHAR(50) NOT NULL,
+-- 	todo_id INT
+-- );
 
 
-CREATE TABLE shop.users (
-	id INT,
-	first_name VARCHAR(50) NOT NULL,
-	email VARCHAR(50) NOT NULL,
-	todo_id INT
-);
+-- CREATE TABLE shop.users (
+-- 	id INT,
+-- 	first_name VARCHAR(50) NOT NULL,
+-- 	email VARCHAR(50) NOT NULL,
+-- 	todo_id INT
+-- );

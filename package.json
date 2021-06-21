@@ -1,16 +1,24 @@
 {
   "name": "nodeqarbon",
   "version": "1.0.0",
-  "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "app.js",
+    "dev": "nodemon -L app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "ejs": "^3.1.6",
     "express": "^4.17.1",
+    "express-flash": "^0.0.2",
+    "express-graphql": "^0.12.0",
+    "express-session": "^1.17.2",
     "nodemon": "^2.0.7",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "pg": "^8.5.1",
     "pg-promise": "^10.9.5",
     "pgtools": "^0.3.1",
@@ -18,5 +26,15 @@
   },
   "devDependencies": {
     "eslint": "^7.24.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arkadiusztomala/nodeQarbon.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/arkadiusztomala/nodeQarbon/issues"
+  },
+  "homepage": "https://github.com/arkadiusztomala/nodeQarbon#readme",
+  "description": ""
 }
