@@ -10,11 +10,11 @@
 <body>
 
     <div>
-        <a href="/users/logout">
+        <a href="/auth/logout">
             <input type="submit" value="Logout">
         </a>
     </div>    
-    <h1>Hello <%= user.charAt(0).toUpperCase() + user.slice(1) %> on your DASHBOARD</h1>
+    <h1>Hello <%= user.email %> on your DASHBOARD</h1>
     
 </body>
 </html>

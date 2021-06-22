@@ -1,10 +1,8 @@
 const uWS = require("uwebsockets.js");
-//const pgPromise = require('pg-promise')
 const express = require("express");   // zastapic nanoexpress 
 const app = express();
 const PORT = process.env.PORT || 3000;
-// const db = require("./db/db"); zastapione przez const { pool }
-const { pool } = require("./db/dbConfig")
+const db = require("./db/db");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const flash = require("express-flash");
@@ -15,7 +13,9 @@ const intializePassport = require("./passportConfig");
 
 intializePassport(passport);
 
-//Middleware
+// Middleware
+
+// Parses details from a form
 
 app.use(express.json()); //express. json() is a method inbuilt in express to recognize the incoming Request Object as a JSON Object. This method is called as a middleware in your application using the code: app. use(express
 
@@ -23,6 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 
 app.use(session({
+  // Key we want to keep secret which will encrypt all of our information
   secret: 'secret',
 
   resave: false,
@@ -61,18 +62,20 @@ app.get("/todo/get/:id", (req, res) => {
 });
 
 // /todo/get
-app.get("/todo/getTwo/:id", async (req, res) => {
-  const id = parseInt(req.params.id);
-  const result = await db.query(getOne("todo"), [id]);
-  if (result.length === 0) {
-    res.status(404).send("Todo doesnt exist.");
-    return;
-  }
-  res.status(200).json(result);
-});
+// app.get("/todo/getTwo/:id", async (req, res) => {
+//   const id = parseInt(req.params.id);
+//   const result = await db.query(getOne("todo"), [id]);
+//   if (result.length === 0) {
+//     res.status(404).send("Todo doesnt exist.");
+//     return;
+//   }
+//   res.status(200).json(result);
+// });
+
+
 // /todo/list
 app.get("/todo/list", (req, res) => {
-  db.query("SELECT * FROM todo")
+  db.query("SELECT * FROM todo WHERE user_id = $1", [req.user.id])
     .then((data) => {
       res.status(200).json(data);
     })
@@ -84,8 +87,8 @@ app.get("/todo/list", (req, res) => {
 // /todo/add
 app.post("/todo/add", (req, res) => {
   const { description } = req.body;
-  db.query("INSERT INTO todo (description) VALUES ($1)", [description])
-    .then((data) => {
+  db.query("INSERT INTO todo (description, user_id) VALUES ($1, $2)", [description, req.user.id])
+    .then(() => {
       res.status(201).send("Todo has been added.");
     })
     .catch((error) => {
@@ -135,37 +138,77 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
-app.get("/users/login", (req, res) => {
+app.get("/auth/login", (req, res) => {
   res.render("login");
 });
 
-app.get("/users/register", (req, res) => {
+app.get("/auth/register", (req, res) => {
   res.render("register");
 });
 
-app.get("/users/dashboard", (req, res) => {
-  res.render("dashboard", { user: req.user.name });
+app.get("/todo/dashboard", (req, res) => {
+  res.render("dashboard", { user: req.user });
 });
 
-app.get("/users/logout", (req, res) => {
+app.get("/auth/logout", (req, res) => {
   req.logOut();
   req.flash("success_msg", "You are now logged out of your dashboard")
-  res.redirect('/users/login');
+  res.redirect('/auth/login');
 });
 
-app.post("/users/register", async (req, res) => {
-  let { name, email, password, password2 } = req.body;
+app.post("/auth/register", async (req, res) => {
+  let { email, password, password2 } = req.body;
 
   console.log({
-    name,
     email,
     password,
     password2
   });
  
-  let errors = [];
+  let errors = validate(email, password, password2);
 
-  if (!name || !email || !password || !password2) {
+  if (errors.length > 0) {
+    res.render("register", { errors });
+  } else {
+    let hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
+
+    //sprawdzanie czy uzytkowanik istnieje
+    db.query(`SELECT * FROM users WHERE email = $1`, [email])
+      .then((data) => {
+        console.log(data);
+
+        if (data.length > 0) {
+          errors.push({ message: "Email already registered" });
+          res.render("register", { errors })
+        } else {
+          db.query(`INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, password`, [email, hashedPassword])
+          .then(() => {
+              res.status(201).send("You've been registered.");
+            }
+          )
+          .catch((error) => {
+            throw error;
+          })
+        }
+      })
+      .catch((error) => {
+        throw error;
+      });
+  }
+
+});
+
+app.post("/auth/login", passport.authenticate('local', {
+  successRedirect: "/todo/dashboard",
+  failureRedirect: "/auth/login",
+  failureFlash: true
+})
+);
+
+function validate(email, password, password2) {
+  let errors = [];
+  if (!email || !password || !password2) {
     errors.push({message: "Please enter all fields"});
   }
 
@@ -177,60 +220,9 @@ app.post("/users/register", async (req, res) => {
     errors.push({message: "Passwords dosnt match"});
   }
 
-  if (errors.length > 0) {
-    res.render("register", { errors });
-  } else {
-    let hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
-
-    //sprawdzanie czy uzytkowanik istnieje
-    pool.query(
-      `SELECT * FROM users
-      WHERE email = $1`, [email], (err, results) => {
-        if (err){                   //callback fnct
-          throw err
-        }
-        console.log(results.rows);
-
-        if (results.rows.length > 0) {
-          errors.push({ message: "Email already registered" });
-          res.render("register", { errors })
-        } else {
-          pool.query(
-            `INSERT INTO users (name, email, password)
-            VALUES ($1, $2, $3)
-            RETURNING id, password`, [name, email, hashedPassword], (err, result) => {
-              if (err){
-                throw err;
-              }
-              console.log(result.rows)
-              req.flash("success_msg", "Yey you are now registered!");
-              res.redirect("/users/login");
-            }
-          )
-        }
-      }
-    )
-  }
-
-});
-
-app.post("/users/login", passport.authenticate('local', {
-  successRedirect: "/users/dashboard",
-  failureRedirect: "/users/login",
-  failureFlash: true
-})
-);
-
+  return errors;
+}
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT ${PORT}`);
 });
-
-
-
-// POST wyslac
-
-//!!!!!!!!!!!!!!!!!!!!
-// To start the service, type: sudo service postgresql start
-// To conntect to postgres, type: sudo -u postgres psql
